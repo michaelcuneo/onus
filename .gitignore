@@ -1,3 +1,80 @@
 
-# sst
-.sst
+# ============================================================
+# ONUS RFI — SvelteKit / SST / pnpm Monorepo
+# ============================================================
+
+# Dependencies (root and all workspaces)
+node_modules/
+.pnpm-store/
+
+# Package manager logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# SvelteKit
+.svelte-kit/
+build/
+.output/
+
+# Vite / TypeScript
+dist/
+.vite/
+*.tsbuildinfo
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# SST v3 / AWS
+.sst/
+.open-next/
+
+# Deployment adapters
+.vercel/
+.netlify/
+.wrangler/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.sample
+!.env.template
+
+# Private certificates and keys
+*.pem
+*.p12
+*.pfx
+
+# Test output and coverage
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+blob-report/
+
+# Build caches
+.cache/
+.turbo/
+.eslintcache
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.#*
+
+# IDE / Editor
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Operating system
+.DS_Store
+Thumbs.db
+Desktop.ini
