@@ -30,6 +30,9 @@ Use `pnpm exec sst dev` only when AWS credentials/stage are ready; don't deploy 
 
 **One workspace and one lockfile:** keep `pnpm-workspace.yaml` and `pnpm-lock.yaml` at the root. Do not generate nested workspace lockfiles. Changes to dependency versions should be made with pnpm and committed together with the regenerated root lockfile.
 
-## Proposed platform architecture
+## Product workflow and architecture
 
-See [docs/architecture.md](docs/architecture.md). Existing Svelte components/auth contracts, AppSync schema, DynamoDB access patterns, AWS region and billing decisions must be confirmed before implementation.
+- **[Editable product & workflow document](docs/workflow.md)** — plain-English business processes, example scenarios and decisions for Scott and the team. Edit in GitHub and propose changes for review.
+- **[Technical architecture](docs/architecture.md)** — platform infrastructure, event-driven integrations, GraphQL, DynamoDB and MCP guidance.
+
+Existing Svelte components/auth contracts, AppSync schema, DynamoDB access patterns, AWS region and billing decisions must be confirmed before implementation.
