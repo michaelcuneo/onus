@@ -1,8 +1,8 @@
-# ONUS RFI — Product & Workflow Working Document
+# ONUS — Product Direction & Workflow Working Document
 
 **Status:** Working draft for Scott and the development team  
 **Last reviewed:** 15 October 2026  
-**Purpose:** Describe **what ONUS should do from a user's point of view**. Please edit this document freely; it is a discussion and requirements document, **not** a claim that these workflows have been built.
+**Purpose:** Document Scott's product direction and the business workflows ONUS should deliver for property developers and client-side project managers. Please edit this document freely; it is a discussion and requirements document, **not** a claim that these workflows have been built.
 
 > **Scott: please add, remove or rewrite anything here.** Real construction examples are especially useful. Write in plain English; no technical knowledge is required. Anything labelled **To decide** is deliberately open for discussion.
 
@@ -16,23 +16,112 @@
 
 Please do not include actual customer credentials, sensitive personal information, confidential project documents or commercial secrets in this **public** repository. Use fictional examples here.
 
-## 1. The idea, in everyday language
+## 1. Product direction & scope — Scott's authored vision
 
-ONUS provides one place for a project manager to see **what is outstanding, who is responsible, what evidence exists, and what action is needed**. The information may come from ONUS itself or from programs that the company already uses.
+### 1.1 Product vision
 
-ONUS should avoid making someone enter the same information twice. It should watch for important changes from connected systems, determine what those changes mean for the project, show the latest verified position and support sensible reminders or escalations.
+ONUS is a **construction workflow and productivity platform designed specifically for property developers and client-side project managers**.
 
-It is not necessarily the system in which every drawing, document, email or task was originally created. We need to decide which connected program is the authority for each kind of information.
+Development and client-side project teams sit at the centre of complex projects, coordinating architects, engineers, consultants, builders, authorities and other stakeholders. Each party may use different software, communication channels, document systems and internal processes.
+
+The result is fragmented information, duplicated administration, constant follow-ups and project managers spending too much time coordinating work rather than managing project outcomes.
+
+ONUS connects the systems, people and workflows involved in delivering a construction project, **preparing the next actions and reducing the administrative burden on the project manager**.
+
+It is not intended to replace established construction software with another project management suite. Instead, it works across the platforms already used by the project team, connecting information and coordinating activity between them.
+
+### 1.2 Connect the software developers and client-side PMs already use
+
+ONUS should work across the broader construction technology ecosystem, including:
+
+| Area | Example products and information sources |
+| --- | --- |
+| Construction and project management | Procore, Autodesk Construction Cloud, Aconex |
+| Task and workflow management | Monday.com, Smartsheet, Asana and similar systems |
+| Communication | Microsoft Teams, Outlook, Gmail, Slack |
+| Documents and information | SharePoint, OneDrive, Google Drive, Excel, PDF records |
+| Construction programmes | Microsoft Project, Primavera P6 and programme information in other supported systems |
+| Design and technical coordination | Revit, Bluebeam, drawing registers, technical submissions |
+| Commercial and project controls | Cost plans, variations, procurement, approvals and reporting systems |
+
+These are examples of the **intended integration ecosystem**, not a claim that every integration is currently available.
+
+Developers and client-side PMs should not have to change the way every consultant or contractor works just to achieve better coordination. ONUS should connect relevant information across these systems, maintain relationships between records and help move work forward without requiring the PM to manually reconcile everything.
+
+### 1.3 The daily WIP — the PM's control centre
+
+The central experience should be a **daily work-in-progress (WIP) review prepared by ONUS**.
+
+Instead of individually opening Procore, Monday.com, Teams, Outlook, document registers and construction programmes to discover what's changed, the PM gets a consolidated, ready-to-review view of what needs attention.
+
+The WIP should contain five categories:
+
+| WIP category | What it should surface |
+| --- | --- |
+| **Actions ready for approval** | Draft emails and follow-ups; requests for information/approvals; proposed task/register updates; actions arising from meetings, correspondence and document revisions |
+| **Outstanding work and blockers** | Overdue RFIs, submittals, consultant responses, missing approvals, unresolved decisions, deliverables and dependencies preventing other work |
+| **Programme and delivery risks** | Milestones and deadlines; outstanding decisions connected to programme activities; potential delays needing investigation; procurement, construction and handover dependencies |
+| **Escalations needing PM judgement** | Conflicts between systems, repeated non-responses, potential scope/cost/programme implications, developer decisions and formal instructions |
+| **Completed actions and changes** | Responses received, approved actions executed, updated registers and remaining follow-up items |
+
+Where available, each WIP item should display **context, source, responsible person, due date, confidence or verification status, and proposed next step**.
+
+The PM should be able to **approve, reject, amend or escalate** proposed actions. ONUS then carries out approved tasks *where supported and permitted*, records their outcome and reports back on failures.
+
+**Example daily WIP flow:**
+
+1. Connected applications report changes and ONUS reconciles missing information as needed.
+2. ONUS links records to projects, people and dependencies; it does not pretend uncertain matches are verified.
+3. Project rules identify outstanding actions, blockers, milestones, conflicts and possible follow-ups.
+4. ONUS prepares the daily WIP and proposed actions, prioritised for the client-side PM.
+5. The PM reviews supporting evidence and approves, rejects, edits or escalates each proposal.
+6. ONUS performs authorised actions through the relevant connected service, with safe retries and a tracked outcome.
+7. Completed actions, unsuccessful attempts and newly discovered dependencies appear in the next WIP or live updates.
+
+**To decide:** When should the WIP be produced (morning, on demand, both)? Should approvals be individual, bulk or grouped? Which sources have priority when information conflicts? Who can approve an external instruction?
+
+### 1.4 Built around the client-side role
+
+ONUS should reflect the responsibilities of **developers and client-side project managers**, not merely reproduce a head contractor's workflows.
+
+Its coverage should encompass:
+
+- Consultant deliverables and coordination.
+- Design reviews, drawing revisions and approvals.
+- RFIs and technical decisions.
+- Programme milestones, dependencies and reporting.
+- Procurement and long-lead items.
+- Cost plans, variations and commercial approvals.
+- Client decisions and stakeholder commitments.
+- Meeting actions and consultant follow-ups.
+- Construction progress, defects and handover.
+- Accountability, reporting and supporting evidence.
+
+The value is not simply knowing that an RFI is overdue. It is understanding **what the outstanding response relates to, who needs to act, what other work depends on it and what the PM should do next**.
+
+Any programme or contractual impact must be presented according to available evidence. An overdue action alone does not establish an actual project delay or an entitlement to an extension of time.
+
+### 1.5 The intended experience
+
+ONUS should feel like a project coordinator working in the background across the software ecosystem.
+
+It gathers relevant updates, connects the information, identifies what needs attention and prepares the next actions. The PM starts the day with a ready-to-review WIP rather than spending the morning assembling one manually.
+
+> **ONUS connects the software. Coordinates the work. Prepares the decisions.**
+
+The PM retains control over consequential actions, while routine administration and coordination are progressively reduced.
+
+The ultimate objective is to give developers and client-side project managers greater oversight of their projects while spending less time chasing information and managing disconnected systems.
 
 ## 2. Who uses ONUS?
 
 | Person / role | What they need | To decide |
 | --- | --- | --- |
-| Project manager | Overview of outstanding items, ownership, blockers, deadlines and history | Which actions should they be able to approve or trigger? |
+| **Developer / client-side project manager (primary user)** | Daily WIP, prepared decisions, project-wide oversight, programme and commercial risks, delegated follow-ups | Which proposed actions need PM approval, and which may run automatically? |
 | Contracts administrator | Correspondence, RFIs, notices, supporting evidence and exports | Which records and reports are essential? |
 | Contractor / subcontractor | Understand and respond to assigned items | Direct access to ONUS, or updates from existing software? |
 | Architect / consultant | Receive questions, provide responses and sign off decisions | Which connected tools are already used? |
-| Client / superintendent | Review relevant matters and supporting evidence | What should they see and what must remain hidden? |
+| Developer representative / client / superintendent | Review relevant decisions, instructions, scope, cost and programme matters | Which decisions require developer sign-off and what must remain confidential? |
 | Organisation administrator | Add members, configure integrations and project permissions | Who can connect applications or grant access? |
 | ONUS platform administrator | Support tenants and diagnose integration problems | What can support staff access, and with whose permission? |
 
@@ -131,9 +220,9 @@ It is not necessarily the system in which every drawing, document, email or task
 
 **To decide:** How quickly must changes become visible? When is a delay of a few minutes acceptable?
 
-## 9. What the project manager sees
+## 9. The daily WIP and the project manager's control centre
 
-A possible home dashboard might have:
+**The daily WIP described in section 1.3 is the primary product experience**. A dashboard supports that review, rather than replacing it with a collection of generic status cards. It should also allow on-demand updates and historical review. Useful views include:
 
 - **Needs attention:** Unanswered RFIs, unsigned documents, unapproved items, undelivered notices and stalled work.
 - **Responsible person:** Who owns the next required action, and whether the assignment is verified.
@@ -141,11 +230,15 @@ A possible home dashboard might have:
 - **Dependencies:** Why work is blocked and which condition would unblock it.
 - **Evidence and source:** Where the information came from and when ONUS last verified it.
 - **Changes since last visit:** Newly answered RFIs, completed signatures, failed integrations and reopened actions.
+- **Actions ready for approval:** Draft communications, register updates, reminders and follow-ups, with Approve / Reject / Amend / Escalate controls.
+- **Programme and delivery risks:** Possible milestone, procurement, cost and handover impacts requiring investigation.
+- **Escalations for developer/PM judgement:** Conflicting information, repeated non-responses and formal instructions.
+- **Completed actions:** Whether approved cross-system tasks actually succeeded, failed or still need attention.
 - **Suggested next actions:** Draft a reminder, request a refreshed status, contact a responsible person, or review a disputed item.
 
 Suggestions should never silently become authoritative records. Project managers must be able to inspect the source and correct inaccurate links or conclusions.
 
-**Scott — what are the five things a project manager should see first?**
+**Scott — within the five WIP categories, what should the PM see first?**
 
 1. 
 2. 
@@ -216,19 +309,33 @@ The public site should open a **proper full-screen ONUS demonstration**, not a s
 
 ## 14. Systems we want ONUS to connect to
 
-Please add exact vendor/product names and a real-world example. **No integration below is confirmed as built.**
+The target ecosystem is described in section 1.2. Scott and the team can use this working table to identify the **first actual integrations**, their business value, and which operations are safe to automate.
 
-| System / product | What it stores or does | Data ONUS needs to read | Actions ONUS should be able to perform | Priority |
+**Mentioning a product is not a claim of an existing integration.** Verify each vendor's real API, webhook availability, permissions and contractual restrictions before implementation.
+
+| System / product | Example workflow / records | What ONUS reads | Proposed outbound action | Priority / owner |
 | --- | --- | --- | --- | --- |
-| PCX — **exact product name to confirm** | To confirm | To confirm | To confirm | To confirm |
-| Second construction application — name needed | To confirm | To confirm | To confirm | To confirm |
-| Document signing application — name needed | Signatures and completion | Status, signatories, dates, evidence | Perhaps initiate / remind | To confirm |
-| Email system — name needed | Correspondence | Send/delivery/bounce, replies if supported | Perhaps draft/send | To confirm |
-| Scheduling / programme application — name needed | Tasks, programme dates, dependencies | Status and dependencies | Perhaps update status | To confirm |
+| Procore | RFIs, submittals, correspondence | To confirm | To confirm | To confirm |
+| Autodesk Construction Cloud | Drawings, reviews, issues | To confirm | To confirm | To confirm |
+| Aconex | Document and transmittal workflows | To confirm | To confirm | To confirm |
+| Monday.com / Smartsheet / Asana | Tasks, follow-ups, approvals | To confirm | To confirm | To confirm |
+| Microsoft Teams / Slack | Project decisions, meeting follow-ups | To confirm | Draft/post after approval? | To confirm |
+| Outlook / Gmail | Emails, responses, notices | To confirm | Draft/send after approval? | To confirm |
+| SharePoint / OneDrive / Google Drive | Documents, revisions, registers | To confirm | Update linked records? | To confirm |
+| Microsoft Project / Primavera P6 | Milestones, planned dates, dependencies | To confirm | Update only with explicit authority? | To confirm |
+| Revit / Bluebeam | Design reviews and technical submissions | To confirm | To confirm | To confirm |
+| Commercial / cost control tools | Variations, cost plans, procurement | To confirm | To confirm | To confirm |
+| PCX — exact vendor/product unconfirmed | To clarify with Scott | To confirm | To confirm | To confirm |
+
+**To decide:** Which three integrations are indispensable for a useful **daily WIP**, not simply useful to have eventually? What credentials and sandbox accounts can we access?
 
 ## 15. What we still need to agree
 
-- [ ] Which **three real integrations** must work first?
+- [ ] Which **three real integrations** must work first to produce a useful daily WIP?
+- [ ] Define the daily WIP generation schedule, on-demand refresh, priority rules and review interface.
+- [ ] Define PM approval / rejection / amendment / escalation rules, including approval of external messages and formal instructions.
+- [ ] Define the cross-system action outcome states (proposed, awaiting approval, approved, executing, succeeded, failed, needs review).
+- [ ] Decide how to correlate meeting actions, correspondence, drawing revisions, cost items and programme dependencies.
 - [ ] Who creates projects, invites people and authorises external connections?
 - [ ] What is the correct end-to-end RFI lifecycle, including clarification and closure?
 - [ ] Which document/signature/approval states are meaningful on real sites?
@@ -280,6 +387,7 @@ Use this section for important agreed changes. Keep tentative ideas in the workf
 | --- | --- | --- | --- |
 | 15 Oct 2026 | Integration-first, event-driven SaaS; MCP assists but does not replace reliable workflows | Project discussion | Working direction |
 | 15 Oct 2026 | Separate editable workflow document, distinct from technical architecture | Project discussion | Yes |
+| 15 Oct 2026 | Recenter product on **property developers and client-side PMs**, with the **daily WIP and approval queue** as the primary experience; expand targeted integrations beyond RFIs | Scott Gordon (product direction) | Author-proposed direction |
 | | | | |
 
 For technical implementation details, see [architecture.md](architecture.md). This document is deliberately about **business behaviour and user expectations**.
