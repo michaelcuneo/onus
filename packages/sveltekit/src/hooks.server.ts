@@ -1,5 +1,5 @@
 import type { Handle } from '@sveltejs/kit';
-import { getCurrentUser } from '$lib/server/auth';
+import { getCurrentUser } from '#lib/server/auth.js';
 
 export const handle: Handle = async ({ event, resolve }) => {
   // SvelteKit already enforces origin checks for form posts. Cover JSON endpoints too.
