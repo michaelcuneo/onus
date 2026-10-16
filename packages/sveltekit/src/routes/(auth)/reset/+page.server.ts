@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { requestPasswordReset, resetPassword } from '$lib/server/auth';
+import { requestPasswordReset, resetPassword } from '#lib/server/auth.js';
 import type { Actions } from './$types';
 export const actions = {
  request: async ({ request }) => { const form = await request.formData(); const email = String(form.get('email') ?? '');
