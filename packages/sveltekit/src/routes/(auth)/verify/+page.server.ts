@@ -1,5 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { verifyEmail, resendVerification } from '$lib/server/auth';
+import { verifyEmail, resendVerification } from '#lib/server/auth.js';
 import type { Actions, PageServerLoad } from './$types';
 export const load: PageServerLoad = ({ url, locals }) => { if (locals.user) redirect(303, '/app'); return { email: url.searchParams.get('email') ?? '' }; };
 export const actions = {
