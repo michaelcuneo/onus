@@ -1,5 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { loginUser } from '$lib/server/auth';
+import { loginUser } from '#lib/server/auth.js';
 import type { Actions, PageServerLoad } from './$types';
 export const load: PageServerLoad = ({ locals }) => { if (locals.user) redirect(303, '/app'); };
 export const actions = { default: async ({ request, cookies }) => {
