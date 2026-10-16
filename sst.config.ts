@@ -11,9 +11,11 @@ export default $config({
   },
   async run() {
     const { website } = await import("./packages/infra/web");
+    const { authData } = await import("./packages/infra/auth");
 
     return {
-      website,
+      website: website.url,
+      authTable: authData.name,
     };
   },
 });
