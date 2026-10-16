@@ -19,6 +19,58 @@ An overdue RFI or missing approval does **not** by itself prove actual programme
 - **One real application and one full-screen demo.** The demo uses fictional projects/users and safe simulated integrations, rather than an embedded, scaled-down preview.
 - **UI rebuilt in SvelteKit**, initially visually similar to existing ONUS branding. Integrate and repair the developer's existing Svelte component library progressively. Do not inherit the existing site's implementation.
 
+
+## Architecture at a glance — Daily WIP and approval loop
+
+This GitHub-rendered Mermaid diagram illustrates the **proposed** end-to-end data and action paths. The primary user is the **property developer or client-side project manager**. The Daily WIP is the central experience; RFIs are one of several workstreams.
+
+```mermaid
+flowchart TB
+    EXT["External Applications<br/>Procore · Aconex · Autodesk · Microsoft 365<br/>Tasks · Scheduling · Commercial"]
+    ING["ONUS Integration Hub<br/>Verified Webhooks · Connector Lambdas · SQS<br/>API Sync · Data Mapping"]
+    BUS["Amazon EventBridge<br/>Normalised Project Events"]
+    WF["Workflow Engine<br/>Step Functions · Rules · Dependencies"]
+    DB[("DynamoDB<br/>Project State · Evidence · Audit Trail")]
+    WIP["Daily WIP and Decision Engine<br/>Correlate · Prioritise · Identify Risks<br/>Prepare Proposed Actions"]
+    UI["ONUS Application<br/>SvelteKit · AppSync GraphQL<br/>Daily WIP · Project Oversight"]
+    AI["MCP / AI Assistant<br/>Research · Summarise · Draft · Recommend"]
+    REVIEW{"PM Decision<br/>Approve · Reject · Amend · Escalate"}
+    EXEC["Action Execution Service<br/>Authorised Connector Operations<br/>Retries · Outcome Tracking"]
+    VER["Outcome Verification<br/>Confirm External Result<br/>Update Evidence and Audit Trail"]
+
+    EXT -->|"Events and data"| ING
+    ING --> BUS
+    BUS --> WF
+    BUS --> DB
+    WF <--> DB
+    WF --> WIP
+    DB --> WIP
+    WIP --> UI
+    AI <-->|"Verified context and proposals"| WIP
+    UI --> REVIEW
+    REVIEW -->|"Approved"| EXEC
+    REVIEW -->|"Rejected or amended"| WIP
+    EXEC -->|"Permitted outbound actions"| EXT
+    EXEC --> VER
+    EXT -.->|"Receipts and status updates"| ING
+    VER --> DB
+    VER --> WIP
+
+    classDef external fill:#263244,color:#ffffff,stroke:#64748b
+    classDef service fill:#1e293b,color:#ffffff,stroke:#64748b
+    classDef important fill:#164e43,color:#ffffff,stroke:#10b981
+    classDef decision fill:#78350f,color:#ffffff,stroke:#f59e0b
+
+    class EXT external
+    class ING,BUS,WF,DB,UI,AI,EXEC,VER service
+    class WIP important
+    class REVIEW decision
+```
+
+**Reading the diagram:** External systems send verifiable updates into ONUS. Its event/workflow and evidence services establish the current position, the Daily WIP prepares the next decisions, and the project manager approves or changes proposed actions. Only authorised actions are sent back to external systems; their actual outcomes are checked and recorded. MCP/AI helps interpret and draft, but does not replace reliable execution, permissions or audit records.
+
+**Implementation note:** This diagram is a high-level conceptual view, **not** a literal guarantee of transaction order. External events must be validated and durably handled; project-state changes and their audit/outbox records should be atomic where appropriate. Publishing to EventBridge and running downstream workflows have separate retry and failure handling, as specified below.
+
 ## 2. Technology and deployment
 
 | Concern | Direction | Notes |
