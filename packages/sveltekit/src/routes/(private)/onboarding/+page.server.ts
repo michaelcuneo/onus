@@ -1,5 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { createOrganisation, organisationForUser } from '$lib/server/organisations';
+import { createOrganisation, organisationForUser } from '#lib/server/organisations.js';
 import type { Actions, PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ locals }) => {
  if (await organisationForUser(locals.user!.id)) redirect(303, '/app');
