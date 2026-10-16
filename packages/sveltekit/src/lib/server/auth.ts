@@ -94,7 +94,7 @@ export function normalizeEmail(value: string) {
   return value.trim().toLowerCase();
 }
 function assertEmail(value: string) {
-  if (value.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value)) {
+  if (value.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
     throw new Error('Enter a valid email address.');
   }
 }
