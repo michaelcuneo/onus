@@ -77,7 +77,7 @@ flowchart TB
 | --- | --- | --- |
 | Application UI | SvelteKit + TypeScript | Customer portal, organisation admin and platform admin |
 | UI foundation | Developer's existing Svelte components | Components and theme to be reviewed and fixed during integration |
-| Authentication | Developer's existing authentication | Validate compatibility with AppSync; verify identities and memberships server-side |
+| Authentication | ONUS first-party authentication (initial flow implemented) | SvelteKit routes use DynamoDB-backed users and sessions; AppSync identity propagation and resolver authorization remain to be implemented |
 | Infrastructure | SST on AWS | Existing repository uses SST 4.17.2 |
 | Client API | AWS AppSync GraphQL | Queries, mutations and authorised subscriptions |
 | Operational data | Amazon DynamoDB | Tenant-aware access patterns, conditional writes and event history |
@@ -293,7 +293,7 @@ Example cases: (a) one signatory completed but others pending → not `document.
 
 1. **Existing foundation:** root pnpm workspace/lockfile, SST SvelteKit starter, shared types and initial architecture documentation.
 2. **Requirements and source systems:** identify the first three real integration providers, including the product tentatively called "PCX"; confirm authentication, APIs, event/webhook availability, read/write rights, sandboxes, lifecycle definitions and data ownership.
-3. **Core SaaS:** existing auth + component integration, organisation/project authorisation, AppSync, DynamoDB and private S3; build the real application shell and role-aware dashboard.
+3. **Core SaaS:** build on the implemented authentication, project authorisation, DynamoDB project records and workspace UI; add member assignment, integrate the existing component library, and build AppSync and private S3.
 4. **Integration vertical slice:** implement one documented external change (for example document signing completion) end to end: webhook → queue → canonical event → reliable state/audit update → workflow → GraphQL UI. Add fixtures, idempotency and replay from day one.
 5. **RFI + demo:** implement RFI lifecycle, assignments, responses, evidence and a fully usable seeded demo across roles; verify external side effects stay disabled.
 6. **Connector framework:** establish adapter contracts, connection health, reconciliation, retry/observability tooling and the next priority integrations.
@@ -313,10 +313,31 @@ Do not build separate vendor-specific logic into Svelte components. Prefer share
 
 ## 13. Current repository status
 
-- `packages/sveltekit`: SvelteKit starter; application redesign, theming, components and auth are not yet integrated.
-- `packages/infra`: existing SST website resource definition.
+- `packages/sveltekit`: branded public/authentication pages, first-party signup, verification, login, logout, password reset, sessions and onboarding; protected Daily WIP shell and private project creation, listing/search, detail, editing, archive and restore.
+- `packages/infra`: SST website, authentication DynamoDB/secret resources and a separate linked `OnusProjectsData` DynamoDB table without TTL.
 - `packages/shared`: initial framework-neutral types, **not** authorisation/business rules.
 - `sst.config.ts`: existing stage-aware SST entry point.
+- AppSync and authorization integration with the current session model are not yet implemented.
 - Future integration/workflow/MCP package boundaries are **proposals**, not existing files or deployed services.
+
+### Implemented project storage and access
+
+The current project tools use SvelteKit server loads/actions, not AppSync. The server derives the active organisation from the authenticated user rather than trusting a client-supplied organisation ID.
+
+All `/app` routes share a persistent workspace layout: organisation/account sidebar, section navigation, workspace header and content area. Daily WIP and project list/create/detail/edit screens render inside that shell. The active navigation item follows the current route (including nested project routes), and client-side navigation preserves the shell while keeping deep links and browser history working. Project-specific layout styles apply only to the content, not a separate application header.
+
+| Record | Partition key | Sort key |
+| --- | --- | --- |
+| Project profile | `ORG#<organisationId>#PROJECT#<projectId>` | `PROFILE` |
+| Explicit project membership | Same project partition | `MEMBER#<userId>` |
+| Per-user project listing reference | `ORG#<organisationId>#USER#<userId>` | `PROJECT#<projectId>` |
+
+Listing follows paginated references and rechecks active project membership and profile for every result with strongly consistent reads. Stale references after access revocation do not expose records. Reads are not a transactional snapshot of the whole portfolio.
+
+Creation requires an active organisation owner, administrator or project manager. A transaction writes the profile, creator's `MANAGER` membership and listing reference while checking the organisation and organisation membership. Editing, archiving and restoring require both that organisation role and an active project `MANAGER` membership. Organisation owners/admins do not bypass explicit project assignment. Assigned `VIEWER` members can read but cannot mutate projects. Member assignment UI and organisation switching remain future work.
+
+Updates transactionally check active organisation/project memberships and the expected profile version. Stale submissions return a conflict instead of overwriting newer changes. Statuses are planning, active, on hold and completed; archive is a separate timestamp. Archive retains current details and membership and blocks edits until restored. Creation/update timestamps and actors are stored, but append-only audit events and revision history are not yet implemented.
+
+The project tests cover persistence, validation, tenant/member isolation, read-only permissions, concurrent updates, archive/restore, revocation and paginated listing against linked development tables. See the [README validation commands](../README.md#project-tools).
 
 See [README](../README.md) for local development conventions. This document is an architecture plan; confirm each service and provider against implemented code before describing it as live.

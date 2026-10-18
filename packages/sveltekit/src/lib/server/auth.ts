@@ -156,8 +156,9 @@ async function issueCode(purpose: ChallengePurpose, userId: string, email: strin
   try {
     await db.send(new UpdateCommand({
       TableName: table, Key: key,
-      UpdateExpression: 'SET codeHash = :hash, userId = :id, issuedAt = :now, expiresAt = :expires, ttl = :expires, attempts = :zero',
+      UpdateExpression: 'SET codeHash = :hash, userId = :id, issuedAt = :now, expiresAt = :expires, #ttl = :expires, attempts = :zero',
       ConditionExpression: 'attribute_not_exists(pk) OR issuedAt <= :cutoff',
+      ExpressionAttributeNames: { '#ttl': 'ttl' },
       ExpressionAttributeValues: {
         ':hash': digest, ':id': userId, ':now': now,
         ':cutoff': now - CODE_RESEND, ':expires': now + CODE_LIFETIME, ':zero': 0
@@ -307,7 +308,8 @@ async function recordFailedLogin(key: { pk: string; sk: string }) {
   const now = nowSeconds();
   await db.send(new UpdateCommand({
     TableName: table, Key: key,
-    UpdateExpression: 'SET attempts = if_not_exists(attempts, :zero) + :one, ttl = :ttl',
+    UpdateExpression: 'SET attempts = if_not_exists(attempts, :zero) + :one, #ttl = :ttl',
+    ExpressionAttributeNames: { '#ttl': 'ttl' },
     ExpressionAttributeValues: { ':zero': 0, ':one': 1, ':ttl': now + LOGIN_WINDOW * 2 }
   }));
 }

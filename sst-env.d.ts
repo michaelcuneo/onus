@@ -6,6 +6,22 @@
 
 declare module "sst" {
   export interface Resource {
+    "OnusAuthData": {
+      "name": string
+      "type": "sst.aws.Dynamo"
+    }
+    "OnusAuthPepper": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "OnusMailFrom": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "OnusProjectsData": {
+      "name": string
+      "type": "sst.aws.Dynamo"
+    }
     "OnusWebsite": {
       "type": "sst.aws.SvelteKit"
       "url": string

@@ -3,7 +3,7 @@ import { verifyEmail, resendVerification } from '#lib/server/auth.js';
 import type { Actions, PageServerLoad } from './$types';
 export const load: PageServerLoad = ({ url, locals }) => { if (locals.user) redirect(303, '/app'); return { email: url.searchParams.get('email') ?? '' }; };
 export const actions = {
- default: async ({ request, cookies }) => {
+ verify: async ({ request, cookies }) => {
   const form = await request.formData(); const email = String(form.get('email') ?? '');
   try { await verifyEmail(email, String(form.get('code') ?? ''), cookies); }
   catch { return fail(400, { error: 'Invalid or expired verification code.', email }); }
