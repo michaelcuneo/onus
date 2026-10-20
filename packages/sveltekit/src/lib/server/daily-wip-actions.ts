@@ -20,7 +20,7 @@ export async function seedDailyWipDemo(userId: string, projectId: string) {
   const now = new Date().toISOString();
   const dueAt = new Date(Date.now() - 2 * 86400000).toISOString();
   const records = [
-    { sk: 'WORK#RFI#demo-rfi', id: 'demo-rfi', kind: 'RFI', title: 'RFI-001: Confirm structural penetration', status: 'OVERDUE', dueAt, source: 'DEMO:external-rfi' },
+    { sk: 'WORK#RFI#demo-rfi', id: 'demo-rfi', kind: 'RFI', title: 'RFI-001: Confirm structural penetration', status: 'OVERDUE', dueAt, source: 'DEMO:external-rfi', responsibleParty: 'Structural design reviewer' },
     { sk: 'WORK#APPROVAL#demo-document', id: 'demo-document', kind: 'APPROVAL', title: 'Drawing revision awaiting approval', status: 'PENDING', dependsOn: 'demo-rfi', source: 'DEMO:document-control' },
     { sk: 'WORK#TASK#demo-activity', id: 'demo-activity', kind: 'TASK', title: 'Level 2 installation blocked', status: 'BLOCKED', dependsOn: 'demo-document', source: 'DEMO:programme' }
   ];
@@ -90,7 +90,11 @@ export async function resetDailyWipDemo(userId: string, projectId: string) {
     'ACTION#demo-followup',
     'ACTION#followup-demo-rfi',
     'EVENT#demo-detection',
-    'EVENT#ASSESSMENT#followup-demo-rfi'
+    'EVENT#ASSESSMENT#followup-demo-rfi',
+    'EVENT#SIMULATED#followup-demo-rfi#1',
+    'EVENT#SIMULATED#followup-demo-rfi#2',
+    'EVENT#SIMULATED#followup-demo-rfi#3',
+    'EVENT#SIMULATED#followup-demo-rfi#4'
   ]);
   const deletable = records.filter((record) => {
     const sk = record.sk;
@@ -115,4 +119,54 @@ export async function resetDailyWipDemo(userId: string, projectId: string) {
     if (unprocessed.length) await new Promise((resolve) => setTimeout(resolve, 200));
   }
   return { deleted };
+}
+
+/**
+ * Demonstration-only execution. No network requests, email or external writes.
+ * A repeatable cycle simulates first reminder, second reminder, escalation,
+ * then a recorded response. Every step is a conditional DynamoDB transaction.
+ */
+export async function advanceDemoFollowup(userId: string, projectId: string) {
+  const { pk } = await managerContext(userId, projectId);
+  const actionId = 'followup-demo-rfi';
+  const sk = `ACTION#${actionId}`;
+  const { GetCommand } = await import('@aws-sdk/lib-dynamodb');
+  const current = await db.send(new GetCommand({ TableName: table, Key: { pk, sk }, ConsistentRead: true }));
+  const action = current.Item;
+  if (!action || action.source !== 'ONUS:rules' || action.relatedWorkId !== 'demo-rfi') {
+    throw new ProjectError(404, 'Load the demo before running its follow-up.');
+  }
+  const step = typeof action.simulationStep === 'number' ? action.simulationStep : 0;
+  if (step >= 4) throw new ProjectError(409, 'Demonstration is complete. Reset the demo to replay it.');
+  const next = step + 1;
+  const statuses = ['SIMULATED_SENT', 'SIMULATED_REMINDER', 'SIMULATED_ESCALATED', 'SIMULATED_RESPONDED'] as const;
+  const titles = [
+    'Simulated: first RFI reminder prepared for structural design reviewer',
+    'Simulated: second reminder after 24 hours without a response',
+    'Simulated: escalation to project manager after 72 hours',
+    'Simulated: structural design reviewer response received'
+  ];
+  const now = new Date().toISOString();
+  const status = statuses[step];
+  try {
+    await db.send(new TransactWriteCommand({ TransactItems: [
+      { Update: {
+        TableName: table, Key: { pk, sk },
+        UpdateExpression: 'SET #status = :status, simulationStep = :next, updatedAt = :now',
+        ConditionExpression: 'attribute_exists(pk) AND #status = :previous AND (attribute_not_exists(simulationStep) OR simulationStep = :step)',
+        ExpressionAttributeNames: { '#status': 'status' },
+        ExpressionAttributeValues: { ':status': status, ':previous': step === 0 ? 'PROPOSED' : statuses[step - 1], ':step': step, ':next': next, ':now': now }
+      } },
+      { Put: {
+        TableName: table,
+        Item: { pk, sk: `EVENT#SIMULATED#${actionId}#${next}`, id: `simulated-${next}`, kind: 'SIMULATED_FOLLOWUP', title: titles[step], status, actionId, source: 'DEMO:simulation', createdAt: now, simulationStep: next },
+        ConditionExpression: 'attribute_not_exists(pk)'
+      } }
+    ] }));
+  } catch (cause) {
+    if (cause instanceof Error && cause.name === 'TransactionCanceledException')
+      throw new ProjectError(409, 'Demo state changed. Refresh and try again.');
+    throw cause;
+  }
+  return { step: next, status, description: titles[step] };
 }
