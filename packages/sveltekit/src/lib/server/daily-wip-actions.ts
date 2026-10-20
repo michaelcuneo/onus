@@ -176,9 +176,9 @@ export async function advanceDemoFollowup(userId: string, projectId: string) {
       { Update: {
         TableName: table, Key: { pk, sk },
         UpdateExpression: 'SET #status = :status, simulationStep = :next, updatedAt = :now',
-        ConditionExpression: 'attribute_exists(pk) AND #status = :previous AND (attribute_not_exists(simulationStep) OR simulationStep = :step)',
+        ConditionExpression: 'attribute_exists(pk) AND (#status = :previous OR (attribute_not_exists(simulationStep) AND #status = :approved)) AND (attribute_not_exists(simulationStep) OR simulationStep = :step)',
         ExpressionAttributeNames: { '#status': 'status' },
-        ExpressionAttributeValues: { ':status': status, ':previous': step === 0 ? 'PROPOSED' : statuses[step - 1], ':step': step, ':next': next, ':now': now }
+        ExpressionAttributeValues: { ':status': status, ':previous': step === 0 ? 'PROPOSED' : statuses[step - 1], ':approved': 'APPROVED', ':step': step, ':next': next, ':now': now }
       } },
       { Put: {
         TableName: table,
