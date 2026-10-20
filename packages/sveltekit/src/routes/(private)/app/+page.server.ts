@@ -2,7 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { organisationForUser } from '#lib/server/organisations.js';
 import { listProjects } from '#lib/server/projects.ts';
 import { dailyWipForProject } from '#lib/server/daily-wip.js';
-import { approveDailyWipAction, resetDailyWipDemo, seedDailyWipDemo } from '#lib/server/daily-wip-actions.js';
+import { advanceDemoFollowup, approveDailyWipAction, resetDailyWipDemo, seedDailyWipDemo } from '#lib/server/daily-wip-actions.js';
 import { projectLoadError } from '#lib/server/project-errors.ts';
 import { ProjectError } from '#lib/projects.js';
 import { evaluateProjectWip } from '#lib/server/wip-engine.js';
@@ -32,6 +32,19 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
+  simulate: async ({ locals, request }) => {
+    if (!locals.user) redirect(303, '/login');
+    const projectId = (await request.formData()).get('projectId');
+    if (typeof projectId !== 'string') return fail(400, { error: 'Select a project.' });
+    try {
+      const result = await advanceDemoFollowup(locals.user.id, projectId);
+      return { message: `Step ${result.step}/4: ${result.description}. No external message sent.` };
+    } catch (cause) {
+      if (cause instanceof ProjectError) return fail(cause.status, { error: cause.message });
+      console.error('ONUS simulation failed', cause);
+      return fail(500, { error: 'Unable to advance demonstration.' });
+    }
+  },
   reset: async ({ locals, request }) => {
     if (!locals.user) redirect(303, '/login');
     const projectId = (await request.formData()).get('projectId');
