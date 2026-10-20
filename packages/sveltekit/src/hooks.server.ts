@@ -1,4 +1,4 @@
-import type { Handle } from '@sveltejs/kit/hooks';
+import type { Handle } from '@sveltejs/kit';
 import { getCurrentUser } from '#lib/server/auth.js';
 
 export const handle: Handle = async ({ event, resolve }) => {
