@@ -6,7 +6,7 @@
 	const actions = $derived(data.workflows.flatMap((w) => w.proposedActions.map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName, canManage: w.canManage }))));
 	const label = (value: unknown) => String(value ?? '');
 	const simulations = $derived(data.workflows.flatMap((w) => w.proposedActions.filter((item) => item.id === 'followup-demo-rfi').map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName, canManage: w.canManage }))));
-	const simulatedEvents = $derived(data.workflows.flatMap((w) => w.events.filter((item) => item.kind === 'SIMULATED_FOLLOWUP').map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName }))));
+	const simulatedEvents = $derived(data.workflows.flatMap((w) => w.events.filter((item) => item.kind === 'SIMULATED_FOLLOWUP' || item.kind === 'RESOLUTION').map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName }))));
 	const categories = [
 		{
 			id: 'approvals',
@@ -41,7 +41,7 @@
 			label: 'Completed',
 			title: 'Know what actually happened.',
 			description:
-				'Simulated responses appear here when the demonstration finishes. An approved or queued action is not a verified outcome.'
+				'Answered RFIs and simulated responses appear here. A queued action is not a completed result.'
 		}
 	];
 	let selectedCategory = $state(categories[0].id);
@@ -135,7 +135,7 @@
 		{#if simulations.length}
 			<section class="simulation-panel" aria-label="Automatic follow-up demonstration">
 				<h3>Automated follow-up demonstration</h3>
-				<p>This is a safe simulation: no emails, notices or external requests are sent. Advance each stage to inspect the complete lifecycle.</p>
+				<p>This is a safe simulation: no emails, notices or external requests are sent. The final response marks the RFI answered, stops follow-ups and makes its drawing ready for review. The installation stays blocked.</p>
 				{#each simulations as simulation (simulation.projectId + simulation.sk)}
 					<div class="simulation-entry">
 						<p><strong>{simulation.projectName}</strong> · {label(simulation.status)} · Stage {label(simulation.simulationStep ?? 0)} of 4</p>
