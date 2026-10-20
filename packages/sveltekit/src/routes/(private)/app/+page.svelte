@@ -112,6 +112,10 @@
 					<input type="hidden" name="projectId" value={workflow.projectId} />
 					<button class="wip-action" type="submit">Assess {workflow.projectName}</button>
 				</form>
+				<form method="POST" action="?/reset" onsubmit={(event) => { if (!confirm('Reset demonstration data for this project? This removes demo approvals and audit records.')) event.preventDefault(); }}>
+					<input type="hidden" name="projectId" value={workflow.projectId} />
+					<button class="wip-action reset-action" type="submit">Reset demo for {workflow.projectName}</button>
+				</form>
 			{/each}
 		</div>
 		<div class="category-filters" role="group" aria-label="WIP categories">
@@ -221,6 +225,8 @@
 </section>
 
 <style>
+	button.reset-action{background:#fff;color:#9c443d;border-color:#e9c8c5}
+
 	.assessment-controls{display:flex;gap:.6rem;flex-wrap:wrap;padding:0 1.5rem 1rem}
 
 	.wip-notice{margin:0 1.5rem 1rem;padding:.8rem;border:1px solid #c8dfd1;border-radius:.4rem;font-size:.8rem}
