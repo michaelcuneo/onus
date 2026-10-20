@@ -106,6 +106,14 @@
 			</div>
 			<span class="subtle-badge">{data.workflows.some((w) => w.workItems.length) ? 'Workflow demo' : 'Ready for demo'}</span>
 		</div>
+		<div class="assessment-controls">
+			{#each data.workflows.filter((w) => w.canManage && w.workItems.length) as workflow (workflow.projectId)}
+				<form method="POST" action="?/evaluate">
+					<input type="hidden" name="projectId" value={workflow.projectId} />
+					<button class="wip-action" type="submit">Assess {workflow.projectName}</button>
+				</form>
+			{/each}
+		</div>
 		<div class="category-filters" role="group" aria-label="WIP categories">
 			{#each categories as category (category.id)}
 				<button
@@ -122,7 +130,7 @@
 			<div class="wip-records">
 				{#each records as item (item.projectId + item.sk)}
 					<article class="wip-record">
-						<div><span class="empty-kicker">{item.projectName} · {label(item.kind)}</span><h3>{label(item.title ?? item.id)}</h3><p>{label(item.status)}</p></div>
+						<div><span class="empty-kicker">{item.projectName} · {label(item.kind)}</span><h3>{label(item.title ?? item.id)}</h3><p>{label(item.status)}{#if item.explanation} · {label(item.explanation)}{/if}</p></div>
 						{#if 'canManage' in item && item.canManage && item.status === 'PROPOSED'}
 							<form method="POST" action="?/approve"><input type="hidden" name="projectId" value={item.projectId} /><input type="hidden" name="actionId" value={label(item.id)} /><button class="wip-action" type="submit">Approve follow-up</button></form>
 						{/if}
@@ -213,6 +221,8 @@
 </section>
 
 <style>
+	.assessment-controls{display:flex;gap:.6rem;flex-wrap:wrap;padding:0 1.5rem 1rem}
+
 	.wip-notice{margin:0 1.5rem 1rem;padding:.8rem;border:1px solid #c8dfd1;border-radius:.4rem;font-size:.8rem}
 	.wip-records{padding:1rem 1.5rem;display:grid;gap:.8rem}
 	.wip-record{border:1px solid #dce5df;border-radius:.5rem;padding:1rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
