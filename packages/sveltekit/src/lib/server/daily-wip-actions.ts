@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, QueryCommand, BatchWriteCommand, TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, QueryCommand, BatchWriteCommand, TransactWriteCommand, type WriteRequest } from '@aws-sdk/lib-dynamodb';
 import { Resource } from 'sst';
 import { ProjectError } from '../projects.js';
 import { getProject } from './projects.js';
@@ -104,7 +104,7 @@ export async function resetDailyWipDemo(userId: string, projectId: string) {
       (record.actionId === 'demo-followup' || record.actionId === 'followup-demo-rfi') &&
       record.kind === 'AUDIT';
   });
-  let pending = deletable.map((record) => ({
+  let pending: WriteRequest[] = deletable.map((record) => ({
     DeleteRequest: { Key: { pk, sk: record.sk as string } }
   }));
   let deleted = 0;
