@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, QueryCommand, BatchWriteCommand, TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
 import { Resource } from 'sst';
 import { ProjectError } from '../projects.js';
 import { getProject } from './projects.js';
@@ -64,4 +64,55 @@ export async function approveDailyWipAction(userId: string, projectId: string, a
       throw new ProjectError(409, 'This action has already changed. Refresh to see its current status.');
     throw cause;
   }
+}
+
+/** Reset only known POC records; never clear a project's other workflow data. */
+export async function resetDailyWipDemo(userId: string, projectId: string) {
+  const { pk } = await managerContext(userId, projectId);
+  const records: Array<Record<string, unknown>> = [];
+  let cursor: Record<string, unknown> | undefined;
+  do {
+    const page = await db.send(new QueryCommand({
+      TableName: table,
+      KeyConditionExpression: 'pk = :pk',
+      ExpressionAttributeValues: { ':pk': pk },
+      ExclusiveStartKey: cursor,
+      ConsistentRead: true
+    }));
+    records.push(...(page.Items ?? []));
+    cursor = page.LastEvaluatedKey;
+  } while (cursor);
+
+  const demoKeys = new Set([
+    'WORK#RFI#demo-rfi',
+    'WORK#APPROVAL#demo-document',
+    'WORK#TASK#demo-activity',
+    'ACTION#demo-followup',
+    'ACTION#followup-demo-rfi',
+    'EVENT#demo-detection',
+    'EVENT#ASSESSMENT#followup-demo-rfi'
+  ]);
+  const deletable = records.filter((record) => {
+    const sk = record.sk;
+    if (typeof sk !== 'string') return false;
+    if (demoKeys.has(sk)) return true;
+    return sk.startsWith('EVENT#') &&
+      (record.actionId === 'demo-followup' || record.actionId === 'followup-demo-rfi') &&
+      record.kind === 'AUDIT';
+  });
+  let pending = deletable.map((record) => ({
+    DeleteRequest: { Key: { pk, sk: record.sk as string } }
+  }));
+  let deleted = 0;
+  while (pending.length) {
+    const batch = pending.slice(0, 25);
+    const result = await db.send(new BatchWriteCommand({
+      RequestItems: { [table]: batch }
+    }));
+    const unprocessed = result.UnprocessedItems?.[table] ?? [];
+    deleted += batch.length - unprocessed.length;
+    pending = [...unprocessed, ...pending.slice(25)];
+    if (unprocessed.length) await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+  return { deleted };
 }
