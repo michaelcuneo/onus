@@ -4,7 +4,6 @@
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 	const work = $derived(data.workflows.flatMap((w) => w.workItems.map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName }))));
 	const actions = $derived(data.workflows.flatMap((w) => w.proposedActions.map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName, canManage: w.canManage }))));
-	const records = $derived(selectedCategory === 'approvals' ? actions.filter((item) => item.status === 'PROPOSED') : selectedCategory === 'completed' ? actions.filter((item) => item.status === 'APPROVED') : selectedCategory === 'blockers' ? work.filter((item) => item.status === 'OVERDUE' || item.status === 'PENDING') : selectedCategory === 'risks' ? work.filter((item) => item.status === 'BLOCKED') : []);
 	const label = (value: unknown) => String(value ?? '');
 	const categories = [
 		{
@@ -44,6 +43,7 @@
 		}
 	];
 	let selectedCategory = $state(categories[0].id);
+	const records = $derived(selectedCategory === 'approvals' ? actions.filter((item) => item.status === 'PROPOSED') : selectedCategory === 'completed' ? actions.filter((item) => item.status === 'APPROVED') : selectedCategory === 'blockers' ? work.filter((item) => item.status === 'OVERDUE' || item.status === 'PENDING') : selectedCategory === 'risks' ? work.filter((item) => item.status === 'BLOCKED') : []);
 	const currentCategory = $derived(
 		categories.find((category) => category.id === selectedCategory)!
 	);
@@ -122,7 +122,7 @@
 			<div class="wip-records">
 				{#each records as item (item.projectId + item.sk)}
 					<article class="wip-record">
-						<div><span class="empty-kicker">{item.projectName} · {label(item.kind)}</span><h3>{label(item.title ?? item.id)}</h3><p>{label(item.status)}{#if item.dependsOn} · Depends on {label(item.dependsOn)}{/if}</p></div>
+						<div><span class="empty-kicker">{item.projectName} · {label(item.kind)}</span><h3>{label(item.title ?? item.id)}</h3><p>{label(item.status)}</p></div>
 						{#if 'canManage' in item && item.canManage && item.status === 'PROPOSED'}
 							<form method="POST" action="?/approve"><input type="hidden" name="projectId" value={item.projectId} /><input type="hidden" name="actionId" value={label(item.id)} /><button class="wip-action" type="submit">Approve follow-up</button></form>
 						{/if}
