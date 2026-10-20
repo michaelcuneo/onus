@@ -41,11 +41,11 @@
 			label: 'Completed',
 			title: 'Know what actually happened.',
 			description:
-				'Completed actions and their verified outcomes will appear here. A proposed or queued action will not be treated as a completed result.'
+				'Simulated responses appear here when the demonstration finishes. An approved or queued action is not a verified outcome.'
 		}
 	];
 	let selectedCategory = $state(categories[0].id);
-	const records = $derived(selectedCategory === 'approvals' ? actions.filter((item) => item.status === 'PROPOSED') : selectedCategory === 'completed' ? actions.filter((item) => item.status === 'APPROVED') : selectedCategory === 'blockers' ? work.filter((item) => item.status === 'OVERDUE' || item.status === 'PENDING') : selectedCategory === 'risks' ? work.filter((item) => item.status === 'BLOCKED') : []);
+	const records = $derived(selectedCategory === 'approvals' ? actions.filter((item) => item.status === 'PROPOSED') : selectedCategory === 'completed' ? actions.filter((item) => item.status === 'SIMULATED_RESPONDED') : selectedCategory === 'blockers' ? work.filter((item) => item.status === 'OVERDUE' || item.status === 'PENDING') : selectedCategory === 'risks' ? work.filter((item) => item.status === 'BLOCKED') : []);
 	const currentCategory = $derived(
 		categories.find((category) => category.id === selectedCategory)!
 	);
