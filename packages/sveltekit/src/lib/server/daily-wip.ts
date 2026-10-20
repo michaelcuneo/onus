@@ -15,6 +15,11 @@ export type WipRecord = {
   title?: string;
   dueAt?: string;
   source?: string;
+  explanation?: string;
+  dependsOn?: string;
+  relatedWorkId?: string;
+  evidence?: string[];
+  dependencyIds?: string[];
   updatedAt?: string;
   [key: string]: unknown;
 };
