@@ -101,8 +101,8 @@ export async function resetDailyWipDemo(userId: string, projectId: string) {
     if (typeof sk !== 'string') return false;
     if (demoKeys.has(sk)) return true;
     return sk.startsWith('EVENT#') &&
-      (record.actionId === 'demo-followup' || record.actionId === 'followup-demo-rfi') &&
-      record.kind === 'AUDIT';
+      (record.actionId === 'demo-followup' || record.actionId === 'followup-demo-rfi' || record.relatedWorkId === 'demo-rfi') &&
+      (record.kind === 'AUDIT' || record.kind === 'RESOLUTION' || record.kind === 'DEPENDENCY_REEVALUATION');
   });
   let pending = deletable.map((record) => ({
     DeleteRequest: { Key: { pk, sk: record.sk as string } }
@@ -138,6 +138,7 @@ export async function advanceDemoFollowup(userId: string, projectId: string) {
   }
   const step = typeof action.simulationStep === 'number' ? action.simulationStep : 0;
   if (step >= 4) throw new ProjectError(409, 'Demonstration is complete. Reset the demo to replay it.');
+  if (step > 0 && action.status === 'SIMULATED_RESPONDED') throw new ProjectError(409, 'This RFI is already answered.');
   const next = step + 1;
   const statuses = ['SIMULATED_SENT', 'SIMULATED_REMINDER', 'SIMULATED_ESCALATED', 'SIMULATED_RESPONDED'] as const;
   const titles = [
@@ -148,6 +149,27 @@ export async function advanceDemoFollowup(userId: string, projectId: string) {
   ];
   const now = new Date().toISOString();
   const status = statuses[step];
+  const resolutionWrites = next === 4 ? [
+    { Update: {
+      TableName: table, Key: { pk, sk: 'WORK#RFI#demo-rfi' },
+      UpdateExpression: 'SET #status = :answered, answeredAt = :now, responseSummary = :response, updatedAt = :now',
+      ConditionExpression: '#status = :overdue',
+      ExpressionAttributeNames: { '#status': 'status' },
+      ExpressionAttributeValues: { ':answered': 'ANSWERED', ':overdue': 'OVERDUE', ':now': now, ':response': 'DEMO: Structural reviewer confirmed penetration detail; drawing revision still requires approval.' }
+    } },
+    { Update: {
+      TableName: table, Key: { pk, sk: 'WORK#APPROVAL#demo-document' },
+      UpdateExpression: 'SET #status = :ready, updatedAt = :now',
+      ConditionExpression: '#status = :pending AND dependsOn = :rfi',
+      ExpressionAttributeNames: { '#status': 'status' },
+      ExpressionAttributeValues: { ':ready': 'READY_FOR_REVIEW', ':pending': 'PENDING', ':rfi': 'demo-rfi', ':now': now }
+    } },
+    { Put: {
+      TableName: table,
+      Item: { pk, sk: 'EVENT#RESOLUTION#demo-rfi', id: 'resolution-demo-rfi', kind: 'RESOLUTION', title: 'RFI answered; follow-ups stopped. Drawing approval ready for review; installation remains blocked.', actionId, relatedWorkId: 'demo-rfi', status: 'ANSWERED', source: 'DEMO:simulation', createdAt: now },
+      ConditionExpression: 'attribute_not_exists(pk)'
+    } }
+  ] : [];
   try {
     await db.send(new TransactWriteCommand({ TransactItems: [
       { Update: {
@@ -161,11 +183,12 @@ export async function advanceDemoFollowup(userId: string, projectId: string) {
         TableName: table,
         Item: { pk, sk: `EVENT#SIMULATED#${actionId}#${next}`, id: `simulated-${next}`, kind: 'SIMULATED_FOLLOWUP', title: titles[step], status, actionId, source: 'DEMO:simulation', createdAt: now, simulationStep: next },
         ConditionExpression: 'attribute_not_exists(pk)'
-      } }
+      } },
+      ...resolutionWrites
     ] }));
   } catch (cause) {
     if (cause instanceof Error && cause.name === 'TransactionCanceledException')
-      throw new ProjectError(409, 'Demo state changed. Refresh and try again.');
+      throw new ProjectError(409, 'Demo state changed or the RFI was already resolved. Refresh and try again.');
     throw cause;
   }
   return { step: next, status, description: titles[step] };
