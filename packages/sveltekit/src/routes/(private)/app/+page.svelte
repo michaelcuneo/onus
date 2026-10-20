@@ -7,6 +7,7 @@
 	const label = (value: unknown) => String(value ?? '');
 	const simulations = $derived(data.workflows.flatMap((w) => w.proposedActions.filter((item) => item.id === 'followup-demo-rfi').map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName, canManage: w.canManage }))));
 	const simulatedEvents = $derived(data.workflows.flatMap((w) => w.events.filter((item) => item.kind === 'SIMULATED_FOLLOWUP' || item.kind === 'RESOLUTION').map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName }))));
+	const investigations = $derived(data.workflows.flatMap((w) => w.investigations.map((investigation) => ({ ...investigation, projectId: w.projectId, projectName: w.projectName }))));
 	const categories = [
 		{
 			id: 'approvals',
@@ -158,6 +159,26 @@
 				{/if}
 			</section>
 		{/if}
+		{#if investigations.length}
+			<section aria-label="ONUS investigations" class="investigation-panel">
+				<h3>ONUS investigations</h3>
+				<p>Evidence-based responsibility and programme analysis. Linked activities are not proof of delay.</p>
+				{#each investigations as investigation (investigation.projectId + investigation.rfiId)}
+					<article class="investigation-case">
+						<p class="empty-kicker">{investigation.projectName} · {investigation.rfiId}</p>
+						<h4>{investigation.title} · {investigation.status}</h4>
+						<p><strong>Assigned:</strong> {investigation.responsibleParties.join(', ') || 'Not assigned'}</p>
+						<p><strong>Programme links:</strong> {investigation.programmeActivities.join(', ') || 'None recorded'}</p>
+						<p><strong>Finding:</strong> {investigation.finding}</p>
+						<p><strong>Next action:</strong> {investigation.nextAction}</p>
+						<details><summary>Inspect {investigation.evidenceKeys.length} evidence references and {investigation.downstream.length} dependencies</summary>
+							<ul>{#each investigation.downstream as dependency (dependency.id)}<li>{dependency.title} — {dependency.status}</li>{/each}</ul>
+							<p>Evidence keys: {investigation.evidenceKeys.join(', ')}</p>
+						</details>
+					</article>
+				{/each}
+			</section>
+		{/if}
 		<div class="category-filters" role="group" aria-label="WIP categories">
 			{#each categories as category (category.id)}
 				<button
@@ -265,6 +286,12 @@
 </section>
 
 <style>
+	.investigation-panel{margin:1rem 0;padding:1.25rem;border:1px solid rgba(128,128,128,.25);border-radius:12px}
+	.investigation-case{padding:1rem 0;border-top:1px solid rgba(128,128,128,.2)}
+	.investigation-case h4{margin:.4rem 0}
+	.investigation-case details{margin:.75rem 0}
+	.investigation-case summary{cursor:pointer}
+
 	.simulation-panel{margin:0 1.5rem 1rem;padding:1rem;border:1px solid var(--border-color,#ddd);border-radius:12px}
 	.simulation-panel h3{margin:0 0 .5rem}
 	.simulation-entry{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between}
