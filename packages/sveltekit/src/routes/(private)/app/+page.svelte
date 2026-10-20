@@ -46,21 +46,18 @@
 	];
 	let selectedCategory = $state(categories[0].id);
 	const records = $derived.by(() => {
-		const unresolved = work.filter((item) => {
-			const resolution = actions.find((action) => action.projectId === item.projectId && action.relatedWorkId === item.id);
-			return resolution?.status !== 'SIMULATED_RESPONDED';
-		});
+		const unresolved = work.filter((item) => item.status !== 'ANSWERED');
 		if (selectedCategory === 'approvals') return actions.filter((item) => item.status === 'PROPOSED');
-		if (selectedCategory === 'completed') return actions.filter((item) => item.status === 'SIMULATED_RESPONDED');
+		if (selectedCategory === 'completed') return [...work.filter((item) => item.status === 'ANSWERED'), ...actions.filter((item) => item.status === 'SIMULATED_RESPONDED')];
 		if (selectedCategory === 'blockers') return [
-			...unresolved.filter((item) => item.status === 'OVERDUE' || item.status === 'PENDING'),
+			...unresolved.filter((item) => item.status === 'OVERDUE' || item.status === 'PENDING' || item.status === 'READY_FOR_REVIEW'),
 			...actions.filter((item) => item.status === 'SIMULATED_SENT' || item.status === 'SIMULATED_REMINDER')
 		];
 		if (selectedCategory === 'risks') return unresolved.filter((item) => item.status === 'BLOCKED');
 		if (selectedCategory === 'escalations') return actions.filter((item) => item.status === 'SIMULATED_ESCALATED');
 		return [];
 	});
-	const categoryCounts = $derived({ approvals: actions.filter((item) => item.status === 'PROPOSED').length, blockers: work.filter((item) => (item.status === 'OVERDUE' || item.status === 'PENDING') && !actions.some((action) => action.projectId === item.projectId && action.relatedWorkId === item.id && action.status === 'SIMULATED_RESPONDED')).length + actions.filter((item) => item.status === 'SIMULATED_SENT' || item.status === 'SIMULATED_REMINDER').length, risks: work.filter((item) => item.status === 'BLOCKED' && !actions.some((action) => action.projectId === item.projectId && action.status === 'SIMULATED_RESPONDED')).length, escalations: actions.filter((item) => item.status === 'SIMULATED_ESCALATED').length, completed: actions.filter((item) => item.status === 'SIMULATED_RESPONDED').length });
+	const categoryCounts = $derived({ approvals: actions.filter((item) => item.status === 'PROPOSED').length, blockers: work.filter((item) => ['OVERDUE', 'PENDING', 'READY_FOR_REVIEW'].includes(item.status ?? '')).length + actions.filter((item) => item.status === 'SIMULATED_SENT' || item.status === 'SIMULATED_REMINDER').length, risks: work.filter((item) => item.status === 'BLOCKED').length, escalations: actions.filter((item) => item.status === 'SIMULATED_ESCALATED').length, completed: work.filter((item) => item.status === 'ANSWERED').length + actions.filter((item) => item.status === 'SIMULATED_RESPONDED').length });
 	const currentCategory = $derived(
 		categories.find((category) => category.id === selectedCategory)!
 	);
@@ -148,7 +145,7 @@
 								<button class="wip-action" type="submit">Simulate next automatic step</button>
 							</form>
 						{:else if Number(simulation.simulationStep ?? 0) === 4}
-							<p>Simulated response received. Reset the demo to replay.</p>
+							<p>RFI answered and reminders stopped. Drawing ready for review; installation remains blocked until approval. Reset the demo to replay.</p>
 						{/if}
 					</div>
 				{/each}
