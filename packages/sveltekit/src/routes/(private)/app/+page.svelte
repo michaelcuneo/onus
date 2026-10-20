@@ -1,7 +1,11 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import type { PageData, ActionData } from './$types';
 
-	let { data }: { data: PageData } = $props();
+	let { data, form }: { data: PageData; form: ActionData } = $props();
+	const work = $derived(data.workflows.flatMap((w) => w.workItems.map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName }))));
+	const actions = $derived(data.workflows.flatMap((w) => w.proposedActions.map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName, canManage: w.canManage }))));
+	const records = $derived(selectedCategory === 'approvals' ? actions.filter((item) => item.status === 'PROPOSED') : selectedCategory === 'completed' ? actions.filter((item) => item.status === 'APPROVED') : selectedCategory === 'blockers' ? work.filter((item) => item.status === 'OVERDUE' || item.status === 'PENDING') : selectedCategory === 'risks' ? work.filter((item) => item.status === 'BLOCKED') : []);
+	const label = (value: unknown) => String(value ?? '');
 	const categories = [
 		{
 			id: 'approvals',
@@ -84,7 +88,7 @@
 		</div>
 		<div>
 			<span class="metric-label">Decisions for review</span><strong
-				aria-label="Decisions not yet available">&mdash;</strong
+				aria-label="Decisions for review">{actions.filter((item) => item.status === 'PROPOSED').length}</strong
 			><span class="metric-note">Your approval queue, in one place</span>
 		</div>
 		<div>
@@ -100,7 +104,7 @@
 				<h2 id="review-title">Your daily WIP</h2>
 				<p>Prepared for review. You stay in control.</p>
 			</div>
-			<span class="subtle-badge">Not yet connected</span>
+			<span class="subtle-badge">{data.workflows.some((w) => w.workItems.length) ? 'Workflow demo' : 'Ready for demo'}</span>
 		</div>
 		<div class="category-filters" role="group" aria-label="WIP categories">
 			{#each categories as category (category.id)}
@@ -112,6 +116,20 @@
 				>
 			{/each}
 		</div>
+		{#if form?.error}<p class="wip-notice" role="alert">{form.error}</p>{/if}
+		{#if form?.message}<p class="wip-notice" role="status">{form.message}</p>{/if}
+		{#if records.length}
+			<div class="wip-records">
+				{#each records as item (item.projectId + item.sk)}
+					<article class="wip-record">
+						<div><span class="empty-kicker">{item.projectName} · {label(item.kind)}</span><h3>{label(item.title ?? item.id)}</h3><p>{label(item.status)}{#if item.dependsOn} · Depends on {label(item.dependsOn)}{/if}</p></div>
+						{#if 'canManage' in item && item.canManage && item.status === 'PROPOSED'}
+							<form method="POST" action="?/approve"><input type="hidden" name="projectId" value={item.projectId} /><input type="hidden" name="actionId" value={label(item.id)} /><button class="wip-action" type="submit">Approve follow-up</button></form>
+						{/if}
+					</article>
+				{/each}
+			</div>
+		{:else}
 		<div class="empty-state" aria-live="polite" aria-atomic="true">
 			<div class="empty-icon" aria-hidden="true">
 				<svg viewBox="0 0 48 48" fill="none"
@@ -123,12 +141,25 @@
 			<p class="empty-kicker">{currentCategory.label}</p>
 			<h3>{currentCategory.title}</h3>
 			<p>{currentCategory.description}</p>
-			<span class="empty-status">Project workflows are in development</span>
+			{#if data.workflows.some((w) => w.canManage && !w.workItems.length)}
+				<div class="demo-actions">
+					{#each data.workflows.filter((w) => w.canManage && !w.workItems.length) as workflow (workflow.projectId)}
+						<form method="POST" action="?/seed"><input type="hidden" name="projectId" value={workflow.projectId} /><button class="wip-action" type="submit">Load demo for {workflow.projectName}</button></form>
+					{/each}
+				</div>
+			{:else if !data.workflows.length}
+				<a class="project-link" href="/app/projects">Create a project to start the demo &rarr;</a>
+			{:else if data.workflows.some((w) => w.workItems.length)}
+				<span class="empty-status">No items in this category</span>
+			{:else}
+				<span class="empty-status">Ask a project manager to load the demo</span>
+			{/if}
 		</div>
+		{/if}
 		<div class="panel-footer">
 			<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"
 				><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z" /><path d="m8 12 3 3 5-6" /></svg
-			><span>WIP workflows are not connected yet. This is not a report of project health.</span>
+			><span>Demo records are illustrative and are not a report of live project health.</span>
 		</div>
 	</section>
 </section>
@@ -182,6 +213,13 @@
 </section>
 
 <style>
+	.wip-notice{margin:0 1.5rem 1rem;padding:.8rem;border:1px solid #c8dfd1;border-radius:.4rem;font-size:.8rem}
+	.wip-records{padding:1rem 1.5rem;display:grid;gap:.8rem}
+	.wip-record{border:1px solid #dce5df;border-radius:.5rem;padding:1rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+	.wip-record h3{font-size:.95rem;margin:.3rem 0}.wip-record p{font-size:.75rem;color:var(--muted);margin:0}
+	.demo-actions{display:grid;gap:.5rem;margin-top:.5rem}
+	button.wip-action{border:1px solid #c8dfd1;border-radius:.4rem;background:#eaf3ed;color:#176b53;font-weight:650;padding:.6rem .9rem;font-size:.75rem}
+
 	a {
 		text-decoration: none;
 		color: inherit;
