@@ -24,7 +24,7 @@ export type WipRecord = {
  * Never accept an organisation ID from the browser as authority.
  */
 export async function dailyWipForProject(userId: string, projectId: string) {
-  const { project, organisation } = await getProject(userId, projectId);
+  const { project, organisation, canManage } = await getProject(userId, projectId);
   const pk = `ORG#${organisation.organisationId}#PROJECT#${project.id}`;
   const records: WipRecord[] = [];
   let cursor: Record<string, unknown> | undefined;
@@ -43,6 +43,7 @@ export async function dailyWipForProject(userId: string, projectId: string) {
 
   return {
     project: { id: project.id, name: project.name },
+    canManage: canManage && !project.archivedAt,
     workItems: records.filter((item) => item.sk.startsWith('WORK#')),
     proposedActions: records.filter((item) => item.sk.startsWith('ACTION#')),
     events: records.filter((item) => item.sk.startsWith('EVENT#'))
