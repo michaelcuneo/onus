@@ -94,7 +94,8 @@ export async function resetDailyWipDemo(userId: string, projectId: string) {
     'EVENT#SIMULATED#followup-demo-rfi#1',
     'EVENT#SIMULATED#followup-demo-rfi#2',
     'EVENT#SIMULATED#followup-demo-rfi#3',
-    'EVENT#SIMULATED#followup-demo-rfi#4'
+    'EVENT#SIMULATED#followup-demo-rfi#4',
+    'EVENT#RESOLUTION#demo-rfi'
   ]);
   const deletable = records.filter((record) => {
     const sk = record.sk;
