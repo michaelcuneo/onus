@@ -5,6 +5,8 @@
 	const work = $derived(data.workflows.flatMap((w) => w.workItems.map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName }))));
 	const actions = $derived(data.workflows.flatMap((w) => w.proposedActions.map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName, canManage: w.canManage }))));
 	const label = (value: unknown) => String(value ?? '');
+	const simulations = $derived(data.workflows.flatMap((w) => w.proposedActions.filter((item) => item.id === 'followup-demo-rfi').map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName, canManage: w.canManage }))));
+	const simulatedEvents = $derived(data.workflows.flatMap((w) => w.events.filter((item) => item.kind === 'SIMULATED_FOLLOWUP').map((item) => ({ ...item, projectId: w.projectId, projectName: w.projectName }))));
 	const categories = [
 		{
 			id: 'approvals',
@@ -118,6 +120,32 @@
 				</form>
 			{/each}
 		</div>
+		{#if simulations.length}
+			<section class="simulation-panel" aria-label="Automatic follow-up demonstration">
+				<h3>Automated follow-up demonstration</h3>
+				<p>This is a safe simulation: no emails, notices or external requests are sent. Advance each stage to inspect the complete lifecycle.</p>
+				{#each simulations as simulation (simulation.projectId + simulation.sk)}
+					<div class="simulation-entry">
+						<p><strong>{simulation.projectName}</strong> · {label(simulation.status)} · Stage {label(simulation.simulationStep ?? 0)} of 4</p>
+						{#if simulation.canManage && Number(simulation.simulationStep ?? 0) < 4}
+							<form method="POST" action="?/simulate">
+								<input type="hidden" name="projectId" value={simulation.projectId} />
+								<button class="wip-action" type="submit">Simulate next automatic step</button>
+							</form>
+						{:else if Number(simulation.simulationStep ?? 0) === 4}
+							<p>Simulated response received. Reset the demo to replay.</p>
+						{/if}
+					</div>
+				{/each}
+				{#if simulatedEvents.length}
+					<ol class="simulation-events">
+						{#each simulatedEvents as event (event.projectId + event.sk)}
+							<li>{label(event.title)} <small>({event.projectName})</small></li>
+						{/each}
+					</ol>
+				{/if}
+			</section>
+		{/if}
 		<div class="category-filters" role="group" aria-label="WIP categories">
 			{#each categories as category (category.id)}
 				<button
@@ -225,6 +253,11 @@
 </section>
 
 <style>
+	.simulation-panel{margin:0 1.5rem 1rem;padding:1rem;border:1px solid var(--border-color,#ddd);border-radius:12px}
+	.simulation-panel h3{margin:0 0 .5rem}
+	.simulation-entry{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between}
+	.simulation-events{padding-left:1.5rem}
+
 	button.reset-action{background:#fff;color:#9c443d;border-color:#e9c8c5}
 
 	.assessment-controls{display:flex;gap:.6rem;flex-wrap:wrap;padding:0 1.5rem 1rem}
