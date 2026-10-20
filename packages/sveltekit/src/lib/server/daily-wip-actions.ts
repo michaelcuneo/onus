@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, QueryCommand, BatchWriteCommand, TransactWriteCommand, type WriteRequest } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, QueryCommand, BatchWriteCommand, TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
 import { Resource } from 'sst';
 import { ProjectError } from '../projects.js';
 import { getProject } from './projects.js';
@@ -104,7 +104,7 @@ export async function resetDailyWipDemo(userId: string, projectId: string) {
       (record.actionId === 'demo-followup' || record.actionId === 'followup-demo-rfi') &&
       record.kind === 'AUDIT';
   });
-  let pending: WriteRequest[] = deletable.map((record) => ({
+  let pending = deletable.map((record) => ({
     DeleteRequest: { Key: { pk, sk: record.sk as string } }
   }));
   let deleted = 0;
@@ -115,7 +115,7 @@ export async function resetDailyWipDemo(userId: string, projectId: string) {
     }));
     const unprocessed = result.UnprocessedItems?.[table] ?? [];
     deleted += batch.length - unprocessed.length;
-    pending = [...unprocessed, ...pending.slice(25)];
+    pending = [...unprocessed.filter((item): item is { DeleteRequest: { Key: { pk: string; sk: string } } } => typeof item.DeleteRequest?.Key?.pk === 'string' && typeof item.DeleteRequest.Key.sk === 'string'), ...pending.slice(25)];
     if (unprocessed.length) await new Promise((resolve) => setTimeout(resolve, 200));
   }
   return { deleted };
