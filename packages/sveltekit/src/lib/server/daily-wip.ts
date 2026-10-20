@@ -20,6 +20,7 @@ export type WipRecord = {
   relatedWorkId?: string;
   evidence?: string[];
   dependencyIds?: string[];
+  simulationStep?: number;
   updatedAt?: string;
   [key: string]: unknown;
 };
