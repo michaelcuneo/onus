@@ -20,7 +20,7 @@ export async function seedDailyWipDemo(userId: string, projectId: string) {
   const now = new Date().toISOString();
   const dueAt = new Date(Date.now() - 2 * 86400000).toISOString();
   const records = [
-    { sk: 'WORK#RFI#demo-rfi', id: 'demo-rfi', kind: 'RFI', title: 'RFI-001: Confirm structural penetration', status: 'OVERDUE', dueAt, source: 'DEMO:external-rfi', responsibleParty: 'Structural design reviewer' },
+    { sk: 'WORK#RFI#demo-rfi', id: 'demo-rfi', kind: 'RFI', title: 'RFI-001: Confirm structural penetration', status: 'OVERDUE', dueAt, source: 'DEMO:external-rfi', responsibleParty: 'Structural design reviewer', assignments: [{ displayName: 'Structural design reviewer', role: 'RESPONDER' }], programmeLinks: [{ activityId: 'P6-L2-INSTALL', relationship: 'BLOCKS' }] },
     { sk: 'WORK#APPROVAL#demo-document', id: 'demo-document', kind: 'APPROVAL', title: 'Drawing revision awaiting approval', status: 'PENDING', dependsOn: 'demo-rfi', source: 'DEMO:document-control' },
     { sk: 'WORK#TASK#demo-activity', id: 'demo-activity', kind: 'TASK', title: 'Level 2 installation blocked', status: 'BLOCKED', dependsOn: 'demo-document', source: 'DEMO:programme' }
   ];
