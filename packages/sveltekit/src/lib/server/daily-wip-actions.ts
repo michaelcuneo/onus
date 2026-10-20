@@ -22,9 +22,7 @@ export async function seedDailyWipDemo(userId: string, projectId: string) {
   const records = [
     { sk: 'WORK#RFI#demo-rfi', id: 'demo-rfi', kind: 'RFI', title: 'RFI-001: Confirm structural penetration', status: 'OVERDUE', dueAt, source: 'DEMO:external-rfi' },
     { sk: 'WORK#APPROVAL#demo-document', id: 'demo-document', kind: 'APPROVAL', title: 'Drawing revision awaiting approval', status: 'PENDING', dependsOn: 'demo-rfi', source: 'DEMO:document-control' },
-    { sk: 'WORK#TASK#demo-activity', id: 'demo-activity', kind: 'TASK', title: 'Level 2 installation blocked', status: 'BLOCKED', dependsOn: 'demo-document', source: 'DEMO:programme' },
-    { sk: 'ACTION#demo-followup', id: 'demo-followup', kind: 'FOLLOW_UP', title: 'Request RFI response from assigned reviewer', status: 'PROPOSED', relatedWorkId: 'demo-rfi', source: 'DEMO:recommendation' },
-    { sk: 'EVENT#demo-detection', id: 'demo-detection', kind: 'DETECTION', title: 'Overdue RFI linked to pending approval and blocked activity', status: 'DETECTED', source: 'DEMO:rule-engine' }
+    { sk: 'WORK#TASK#demo-activity', id: 'demo-activity', kind: 'TASK', title: 'Level 2 installation blocked', status: 'BLOCKED', dependsOn: 'demo-document', source: 'DEMO:programme' }
   ];
   // Stable keys and conditional writes prevent repeat demo loads from overwriting decisions.
   for (const record of records) {
@@ -41,7 +39,7 @@ export async function seedDailyWipDemo(userId: string, projectId: string) {
 }
 
 export async function approveDailyWipAction(userId: string, projectId: string, actionId: string) {
-  if (actionId !== 'demo-followup') throw new ProjectError(400, 'Unknown proposed action.');
+  if (!/^followup-[a-zA-Z0-9_-]{1,100}$/.test(actionId) && actionId !== 'demo-followup') throw new ProjectError(400, 'Unknown proposed action.');
   const { pk } = await managerContext(userId, projectId);
   const now = new Date().toISOString();
   const eventId = randomUUID();
