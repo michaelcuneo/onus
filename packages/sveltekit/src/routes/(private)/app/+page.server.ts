@@ -6,6 +6,7 @@ import { advanceDemoFollowup, approveDailyWipAction, resetDailyWipDemo, seedDail
 import { projectLoadError } from '#lib/server/project-errors.ts';
 import { ProjectError } from '#lib/projects.js';
 import { evaluateProjectWip } from '#lib/server/wip-engine.js';
+import { investigateRfis } from '#lib/server/onus-investigations.js';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -22,7 +23,8 @@ export const load: PageServerLoad = async ({ locals }) => {
         canManage: wip.canManage,
         workItems: wip.workItems,
         proposedActions: wip.proposedActions,
-        events: wip.events
+        events: wip.events,
+        investigations: investigateRfis(wip.workItems, wip.events)
       };
     }));
     return { organisation, projectCount: projects.length, workflows };
