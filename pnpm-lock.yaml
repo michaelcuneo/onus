@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  svelte-kit-sst@2.43.5:
+    hash: 0f82266b52006c104c078ae686005f7f5533b9250f22f470cd843f0131f3a3ac
+    path: patches/svelte-kit-sst@2.43.5.patch
+
 importers:
 
   .:
@@ -69,6 +74,9 @@ importers:
       svelte-check:
         specifier: ^4.6.0
         version: 4.7.6(picomatch@4.0.7)(svelte@5.57.2(@typescript-eslint/types@8.71.1))(typescript@6.0.3)
+      svelte-kit-sst:
+        specifier: ^2.43.5
+        version: 2.43.5(patch_hash=0f82266b52006c104c078ae686005f7f5533b9250f22f470cd843f0131f3a3ac)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -1151,6 +1159,9 @@ packages:
     peerDependenciesMeta:
       svelte:
         optional: true
+
+  svelte-kit-sst@2.43.5:
+    resolution: {integrity: sha512-tvWj/YiPCL3scFcHo/RSYZWtXIuX6g6Mib4MXmDw0JrOtZHzqOCG4kWstTbjnWH4i4XyLPPvxrgSkm35muj4uw==}
 
   svelte@5.57.2:
     resolution: {integrity: sha512-1YiPCAXT0Ct6g1vOMmSLa0Nsc3QRMvtDF32ihgglGVrugIuIK38RyDiFNXVDhtQ81TJjSO57NdMw6DyYLqSGDQ==}
@@ -2447,6 +2458,8 @@ snapshots:
       semver: 7.8.5
     optionalDependencies:
       svelte: 5.57.2(@typescript-eslint/types@8.71.1)
+
+  svelte-kit-sst@2.43.5(patch_hash=0f82266b52006c104c078ae686005f7f5533b9250f22f470cd843f0131f3a3ac): {}
 
   svelte@5.57.2(@typescript-eslint/types@8.71.1):
     dependencies:

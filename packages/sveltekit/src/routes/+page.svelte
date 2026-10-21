@@ -1,12 +1,13 @@
 <script lang="ts">
 	import Brand from '#lib/components/Brand.svelte';
+	import ThemeSwitch from '#lib/components/ThemeSwitch.svelte';
 </script>
 
 <svelte:head>
-	<title>ONUS RFI | Less chasing. More clarity.</title>
+	<title>ONUS | Construction project management</title>
 	<meta
 		name="description"
-		content="Construction workflow and accountability for property developers and client-side project managers. Discover the ONUS vision and create your workspace."
+		content="Manage your construction projects with ONUS. Built for property developers and client-side project managers."
 	/>
 </svelte:head>
 
@@ -15,7 +16,8 @@
 		<header class="site-header container">
 			<Brand />
 			<nav aria-label="Main navigation">
-				<a class="product-link" href="#approach">The ONUS approach</a>
+				<ThemeSwitch />
+				<a class="product-link" href="#approach">About ONUS</a>
 				<a href="/login">Log in</a>
 				<a class="nav-cta" href="/signup">Get started <span aria-hidden="true">&rarr;</span></a>
 			</nav>
@@ -23,32 +25,29 @@
 		<main id="main-content">
 			<section class="hero container" aria-labelledby="hero-title">
 				<div class="hero-copy">
-					<p class="eyebrow"><span class="line"></span> Built for the client-side perspective</p>
-					<h1 id="hero-title">Your projects.<br />A clearer<br /><span>way forward.</span></h1>
+					<p class="eyebrow"><span class="line"></span> For developers &amp; project managers</p>
+					<h1 id="hero-title">Less chasing.<br />More<br /><span>building.</span></h1>
 					<p class="hero-description">
-						Less time chasing information. More time making the decisions that move a project
-						forward.
+						Keep your projects in order, without another spreadsheet to maintain or another email to
+						chase.
 					</p>
 					<div class="hero-actions">
 						<a class="button" href="/signup"
 							>Create your workspace <span aria-hidden="true">&rarr;</span></a
 						>
 						<a class="text-link" href="#approach"
-							>Explore the approach <span aria-hidden="true">&darr;</span></a
+							>About ONUS <span aria-hidden="true">&darr;</span></a
 						>
 					</div>
 					<p class="release-note">
-						Early development &middot; Account setup and project records are available.<br />RFI
-						workflows and integrations are coming next.
+						Early access &middot; Project management is available now.<br />RFI workflows and
+						integrations are still in development.
 					</p>
 				</div>
-				<div
-					class="preview"
-					aria-label="Illustrative daily WIP preview using fictional project data"
-				>
+				<div class="preview" aria-label="Sample daily WIP with fictional project data">
 					<div class="preview-top">
 						<span class="preview-brand">ONUS / WORKSPACE</span><span class="example-label"
-							>Illustrative preview</span
+							>Sample workspace</span
 						>
 					</div>
 					<div class="preview-content">
@@ -59,7 +58,7 @@
 							</div>
 							<span class="date-label">Today</span>
 						</div>
-						<p class="preview-intro">The next decisions. With the context behind them.</p>
+						<p class="preview-intro">What needs your attention today.</p>
 						<div class="summary-row">
 							<div><strong>03</strong><span>For review</span></div>
 							<div><strong>02</strong><span>Outstanding</span></div>
@@ -78,12 +77,11 @@
 							<div class="person">
 								<span class="avatar" aria-hidden="true">AM</span>
 								<div>
-									<strong>Alex Morgan</strong><span>Project manager &middot; Next action owner</span
-									>
+									<strong>Alex Morgan</strong><span>Project manager</span>
 								</div>
 							</div>
 							<div class="evidence">
-								<span aria-hidden="true">&#10003;</span> Response linked to source evidence
+								<span aria-hidden="true">&#10003;</span> Architect's response attached
 							</div>
 						</article>
 						<div class="next-item">
@@ -97,7 +95,7 @@
 						</div>
 					</div>
 					<div class="preview-bottom">
-						<span class="green-dot"></span> Prepared for review. You stay in control.
+						<span class="green-dot"></span> Ready for the morning project meeting.
 					</div>
 				</div>
 			</section>
@@ -109,44 +107,44 @@
 			<section class="approach" id="approach" aria-labelledby="approach-title">
 				<div class="container">
 					<div class="section-intro">
-						<p class="eyebrow">The ONUS approach</p>
-						<h2 id="approach-title">Keep the big picture.<br />Without losing the detail.</h2>
+						<p class="eyebrow">Why ONUS</p>
+						<h2 id="approach-title">Projects are complicated.<br />Keeping track shouldn't be.</h2>
 						<p>
-							Construction projects don't happen in one application. ONUS is being built to bring
-							the next actions into focus, across the systems your team already uses.
+							Drawings in one system. Approvals in another. The answer you need buried in an email.
+							We're building ONUS to make that part of the job easier.
 						</p>
 					</div>
 					<div class="principle-grid">
 						<article>
 							<span class="number">01 / CONNECT</span>
-							<h3>Connect the software.</h3>
+							<h3>Less double handling.</h3>
 							<p>
-								The goal: bring relevant RFIs, correspondence and approvals together without asking
-								every consultant to change how they work.
+								Planned integrations will bring RFIs, correspondence and approvals together, without
+								asking every consultant to switch software.
 							</p>
 						</article>
 						<article>
 							<span class="number">02 / COORDINATE</span>
-							<h3>Coordinate the work.</h3>
+							<h3>Know who's on it.</h3>
 							<p>
-								Understand what needs attention, who owns the next action, and which outstanding
-								decisions are holding up other work.
+								We're developing tools to track who's responsible, what's overdue and what's waiting
+								on someone else.
 							</p>
 						</article>
 						<article>
 							<span class="number">03 / DECIDE</span>
-							<h3>Prepare the decisions.</h3>
+							<h3>Get to the decision.</h3>
 							<p>
-								A daily WIP with context and supporting evidence. Review proposed actions, make the
-								call, and keep a record of what happened.
+								The daily WIP will put outstanding decisions alongside the drawings, responses and
+								details you need to make the call.
 							</p>
 						</article>
 					</div>
 					<div class="closing">
 						<div>
-							<p class="eyebrow">A foundation for better oversight</p>
-							<h2>Clarity starts with accountability.</h2>
-							<p>Create your account and organisation while we build the workflows ahead.</p>
+							<p class="eyebrow">Get started</p>
+							<h2>Put your next project in ONUS.</h2>
+							<p>Create a workspace, add your projects and keep their details up to date.</p>
 						</div>
 						<a class="button" href="/signup"
 							>Get started with ONUS <span aria-hidden="true">&rarr;</span></a
@@ -157,7 +155,7 @@
 		</main>
 		<footer class="container">
 			<Brand />
-			<p>Project accountability. From the ground up.</p>
+			<p>Built for the people running the project.</p>
 			<a href="/login">Log in <span aria-hidden="true">&nearr;</span></a>
 		</footer>
 	</div>
@@ -616,6 +614,7 @@
 	@media (max-width: 760px) {
 		.site-header {
 			padding-block: 1.3rem;
+			flex-wrap: wrap;
 		}
 		.product-link {
 			display: none;
@@ -623,6 +622,7 @@
 		nav {
 			gap: 1rem;
 			font-size: 0.75rem;
+			flex-wrap: wrap;
 		}
 		.hero {
 			grid-template-columns: minmax(0, 1fr);

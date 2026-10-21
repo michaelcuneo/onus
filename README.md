@@ -52,3 +52,9 @@ pnpm exec sst shell -- pnpm --filter sveltekit build
 ```
 
 Project tests use real development tables, create isolated fictional fixtures and remove their exact records afterward. Do not run them against production resources. Review the authentication document's production-readiness requirements before release.
+
+## Appearance
+
+The homepage, account screens and workspace include a **Theme** selector with **System**, **Light** and **Dark** options. System is the default and follows OS appearance changes automatically. An explicit preference is saved in this browser and shared across tabs on the same site. Theme selection is applied before rendering to avoid a flash of the wrong appearance. If browser storage is blocked, the current page still changes theme and reports that the preference could not be saved.
+
+Run the theme startup tests with `pnpm --filter sveltekit test:theme` (no AWS resources required).

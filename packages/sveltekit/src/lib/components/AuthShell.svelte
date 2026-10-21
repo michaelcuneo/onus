@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import Brand from './Brand.svelte';
+	import ThemeSwitch from './ThemeSwitch.svelte';
 
 	let { children }: { children: Snippet } = $props();
 </script>
@@ -32,6 +33,7 @@
 		<p class="story-footer">Project accountability. From the ground up.</p>
 	</aside>
 	<main class="auth-main">
+		<div class="theme-control"><ThemeSwitch /></div>
 		<div class="form-container">
 			{@render children()}
 		</div>
@@ -127,6 +129,9 @@
 		justify-content: center;
 		align-items: center;
 		padding: 3rem 2rem 1.5rem;
+	}
+	.theme-control {
+		align-self: flex-end;
 	}
 	.form-container {
 		width: 100%;

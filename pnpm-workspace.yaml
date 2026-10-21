@@ -3,3 +3,5 @@ packages:
 
 allowBuilds:
   esbuild: true
+patchedDependencies:
+  svelte-kit-sst@2.43.5: patches/svelte-kit-sst@2.43.5.patch

@@ -4,6 +4,28 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="text-scale" content="scale" />
+		<script>
+			try {
+				const saved = localStorage.getItem('onus-theme');
+				const preference = saved === 'light' || saved === 'dark' ? saved : 'system';
+				document.documentElement.dataset.themePreference = preference;
+				document.documentElement.dataset.theme =
+					preference === 'system'
+						? matchMedia('(prefers-color-scheme: dark)').matches
+							? 'dark'
+							: 'light'
+						: preference;
+				document.documentElement.style.colorScheme =
+					preference === 'system' ? 'light dark' : preference;
+			} catch (cause) {
+				console.warn('Unable to read ONUS theme preference', cause);
+			}
+		</script>
+		<style>
+			:root {
+				color-scheme: light dark;
+			}
+		</style>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import Brand from '#lib/components/Brand.svelte';
+	import ThemeSwitch from '#lib/components/ThemeSwitch.svelte';
 	import type { LayoutProps } from './$types';
 	let { data, children }: LayoutProps = $props();
 	const isProjects = $derived(
@@ -104,7 +105,10 @@
 					>{isProjects ? 'Projects' : isDetails ? 'Workspace details' : 'Daily WIP'}</strong
 				>
 			</div>
-			<span class="stage-badge"><span class="mint-dot"></span> Early access</span>
+			<div class="header-controls">
+				<ThemeSwitch />
+				<span class="stage-badge"><span class="mint-dot"></span> Early access</span>
+			</div>
 		</header>
 		<main id="workspace-main" class="content">
 			{@render children()}
@@ -387,6 +391,16 @@
 		align-items: center;
 		font-size: 0.65rem;
 		color: #526c60;
+	}
+	.header-controls {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+	@media (max-width: 600px) {
+		.stage-badge {
+			display: none;
+		}
 	}
 	.content {
 		max-width: 1440px;

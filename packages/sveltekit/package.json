@@ -11,13 +11,14 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test:projects": "node --experimental-strip-types --test tests/projects.test.ts",
+		"test:theme": "node --experimental-strip-types --test tests/theme.test.ts",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write ."
 	},
 	"dependencies": {
 		"@aws-sdk/client-dynamodb": "^3.1148.0",
-		"@aws-sdk/lib-dynamodb": "^3.1148.0",
-		"@aws-sdk/client-sesv2": "^3.1148.0"
+		"@aws-sdk/client-sesv2": "^3.1148.0",
+		"@aws-sdk/lib-dynamodb": "^3.1148.0"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
@@ -33,6 +34,7 @@
 		"prettier-plugin-svelte": "^4.1.0",
 		"svelte": "^5.57.1",
 		"svelte-check": "^4.6.0",
+		"svelte-kit-sst": "^2.43.5",
 		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.60.1",
 		"vite": "^8.3.0"

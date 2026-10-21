@@ -38,6 +38,10 @@ ONUS_AUTH_DEV_EMAIL=stdout npx sst dev
 
 If the terminal cannot run SST's multiplexer, append `--mode mono`. For this local-only email mode, `OnusMailFrom` must still be set as an SST secret, but emails are printed rather than sent.
 
+The `production` stage uses `onus.michaelcuneo.com.au`, with DNS and TLS managed by SST through Route 53. Other stages do not claim that domain. Deploy with `pnpm exec sst deploy --stage production` after confirming the AWS account and region. Each stage has its own `OnusAuthPepper` and `OnusMailFrom` secrets; preserve existing peppers unless intentionally invalidating outstanding verification/reset codes. The configured sender is `me@michaelcuneo.com.au`; its parent domain must remain verified in SES in the deployment region. Never enable development stdout email mode in production.
+
+The SST Lambda server explicitly uses Node.js 24. The pnpm patch for `svelte-kit-sst@2.43.5` removes its obsolete SvelteKit Node polyfill import/call: SvelteKit 3 no longer exports that module, and Node.js 24 provides the required web APIs natively. Keep the patch registered in `pnpm-workspace.yaml` and committed with the lockfile until the upstream adapter supports SvelteKit 3.
+
 For a smoke test, use a fictional development account: sign up, enter an incorrect then correct verification code, create an organisation, log out, try an incorrect then correct password, and reset the password. Confirm that the previous session and password no longer grant access. Use the verification page's resend action to recover an account left pending by an earlier failed signup.
 
 Verification uses named actions for both verification and resend. Code inputs must retain the literal `[0-9]{8}` HTML pattern (use a Svelte string expression so braces are not interpolated). DynamoDB update expressions alias the reserved `ttl` attribute in both code issuance and failed-login tracking; ordinary item attributes do not need aliases.

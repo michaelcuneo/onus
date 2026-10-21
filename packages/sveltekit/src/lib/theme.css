@@ -1,0 +1,120 @@
+:root[data-theme='dark'] body:has(:is(.workspace, .auth-shell)) {
+	background: #111e29;
+}
+
+:root[data-theme='dark'] :is(.workspace, .auth-shell) {
+	--ink: #edf2f5;
+	--muted: #b2bec8;
+	--green: #bad0c5;
+}
+
+:root[data-theme='dark']
+	:is(.topbar, .card, .overview > div, .review-panel, .detail-card, .preview, .approach) {
+	background: #192935;
+	color: #edf2f5;
+	border-color: #354550;
+}
+
+:root[data-theme='dark']
+	:is(
+		.welcome-banner,
+		.empty-icon,
+		.panel-footer,
+		.subtle-badge,
+		.ready-badge,
+		.badge,
+		.notice,
+		.preview-bottom,
+		.example-label,
+		.status,
+		.decision,
+		.category-filters button.selected,
+		.preview .avatar
+	) {
+	background: #21343e;
+	color: #c7d7ce;
+	border-color: #354550;
+}
+
+:root[data-theme='dark']
+	:is(
+		.breadcrumb,
+		.breadcrumb strong,
+		.stage-badge,
+		.workspace-status,
+		.workspace-footer,
+		.welcome-banner p,
+		.metric-label,
+		.metric-note,
+		.overview strong,
+		.panel-heading p,
+		.category-filters button,
+		.empty-state > p,
+		.empty-status,
+		.detail-card > p,
+		.details-label,
+		.workspace dt,
+		.project-tools p:not(.error, .notice),
+		.project-tools dt,
+		.project-tools .reference,
+		.project-tools .results,
+		.auth-main p:not(.error, .notice),
+		.auth-main .field-hint,
+		.preview p,
+		.preview span,
+		.preview .person div span,
+		.approach p,
+		.principle-grid .number
+	) {
+	color: #b2bec8;
+}
+
+:root[data-theme='dark']
+	:is(.project-tools input, .project-tools select, .project-tools textarea, .auth-main input) {
+	background: #15242f;
+	color: #edf2f5;
+	border-color: #455662;
+}
+
+:root[data-theme='dark'] :is(input, textarea)::placeholder {
+	color: #93a2ae;
+}
+
+:root[data-theme='dark'] :is(.project-tools .button, .auth-main button) {
+	background: #176b53;
+	border-color: #176b53;
+	color: #fff;
+}
+
+:root[data-theme='dark'] :is(.project-tools .button.secondary, .auth-main button.secondary) {
+	background: transparent;
+	border-color: #667e76;
+	color: #c7d7ce;
+}
+
+:root[data-theme='dark'] :is(.project-tools .button.danger, .error) {
+	background: #382a30;
+	border-color: #79535a;
+	color: #ffc0b5;
+}
+
+:root[data-theme='dark'] :is(.workspace, .auth-shell) a:not(.button, .brand, .nav-item) {
+	color: #c7d7ce;
+}
+
+:root[data-theme='dark']
+	:is(
+		.workspace dl,
+		.workspace dl div,
+		.category-filters,
+		.panel-footer,
+		.card-bottom,
+		.form-divider,
+		.preview-top,
+		.summary-row,
+		.evidence,
+		.principle-grid article,
+		.closing
+	) {
+	border-color: #354550;
+}
